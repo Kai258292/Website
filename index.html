@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gefriertruhe und Kühlschrank Auswahl</title>
+    <title>Gefriertruhe und Kühlschrank</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -76,9 +76,11 @@
         }
         li {
             margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         li button {
-            margin-left: 20px;
             font-size: 0.8em;
         }
         @media (max-width: 600px) {
@@ -88,6 +90,10 @@
             button {
                 padding: 10px 20px;
                 font-size: 0.9em;
+            }
+            .container {
+                width: 100%;
+                padding: 10px;
             }
         }
         #qr-code {
@@ -182,6 +188,7 @@
             const itemName = prompt('Geben Sie den Namen des Artikels ein:');
             if (itemName) {
                 addItem(itemName, type);
+                showItems(type); // Refresh items after adding custom item
             }
         }
 
@@ -230,53 +237,52 @@
             });
         }
 
-        
         function startQRScanner() {
-    const container = document.getElementById('main-container');
-    container.innerHTML = `
-        <h1>Liste laden</h1>
-        <div id="qr-reader"></div>
-        <div class="controls">
-            <button class="back-button" onclick="showSelection()">Zurück</button>
-        </div>
-    `;
+            const container = document.getElementById('main-container');
+            container.innerHTML = `
+                <h1>Liste laden</h1>
+                <div id="qr-reader"></div>
+                <div class="controls">
+                    <button class="back-button" onclick="showSelection()">Zurück</button>
+                </div>
+            `;
 
-    try {
-        const html5QrCode = new Html5Qrcode("qr-reader");
+            try {
+                const html5QrCode = new Html5Qrcode("qr-reader");
 
-        html5QrCode.start(
-            { facingMode: "environment" },
-            {
-                fps: 10,
-                qrbox: 250
-            },
-            qrCodeMessage => {
-                try {
-                    const data = JSON.parse(qrCodeMessage);
-                    if (data && data.freezerList && data.fridgeList) {
-                        freezerList = data.freezerList;
-                        fridgeList = data.fridgeList;
-                        saveToLocalStorage();
-                        html5QrCode.stop().then(() => {
-                            console.log('QR Code scanner stopped.');
-                        }).catch(err => {
-                            console.error('Failed to stop QR Code scanner:', err);
-                        });
-                        showSelection();
-                    } else {
-                        console.error('Invalid QR Code format.');
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    {
+                        fps: 10,
+                        qrbox: 250
+                    },
+                    qrCodeMessage => {
+                        try {
+                            const data = JSON.parse(qrCodeMessage);
+                            if (data && data.freezerList && data.fridgeList) {
+                                freezerList = data.freezerList;
+                                fridgeList = data.fridgeList;
+                                saveToLocalStorage();
+                                html5QrCode.stop().then(() => {
+                                    console.log('QR Code scanner stopped.');
+                                }).catch(err => {
+                                    console.error('Failed to stop QR Code scanner:', err);
+                                });
+                                showSelection();
+                            } else {
+                                console.error('Invalid QR Code format.');
+                            }
+                        } catch (error) {
+                            console.error('Error parsing QR Code:', error);
+                        }
                     }
-                } catch (error) {
-                    console.error('Error parsing QR Code:', error);
-                }
+                ).catch(err => {
+                    console.error('Failed to start QR Code scanner:', err);
+                });
+            } catch (error) {
+                console.error('Error initializing QR Code scanner:', error);
             }
-        ).catch(err => {
-            console.error('Failed to start QR Code scanner:', err);
-        });
-    } catch (error) {
-        console.error('Error initializing QR Code scanner:', error);
-    }
-}
+        }
     </script>
 </body>
 </html>
