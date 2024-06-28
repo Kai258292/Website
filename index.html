@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gefriertruhe und Kühlschrank Auswahl</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: #8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #8f8;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            background-color: #222;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        .selection, .items, .list, .controls {
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #8f8;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            margin: 8px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%;
+            max-width: 200px;
+            box-sizing: border-box;
+        }
+        button.list-view {
+            background-color: #ff6600;
+        }
+        button.list-view:hover {
+            background-color: #cc5500;
+        }
+        button:hover {
+            background-color: #5a5;
+            transform: scale(1.05);
+        }
+        .back-button {
+            background-color: #f55;
+        }
+        .back-button:hover {
+            background-color: #d33;
+        }
+        .custom-button {
+            background-color: #ff0;
+        }
+        .custom-button:hover {
+            background-color: #cc0;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        li button {
+            margin-left: 20px;
+            font-size: 0.8em;
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+        #qr-code {
+            margin-top: 20px;
+        }
+        #qr-reader {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+    </style>
+    <script src="qrcodec.js"></script>
+    <script src="qrcodes.js"></script>
+</head>
+<body>
+    <div class="container" id="main-container">
+        <h1>Wählen Sie aus</h1>
+        <div class="selection">
+            <button onclick="showItems('freezer')">Gefriertruhe</button>
+            <button onclick="showItems('fridge')">Kühlschrank</button>
+        </div>
+        <div class="controls">
+            <button class="list-view" onclick="generateQRCode()">Liste ausgeben</button>
+            <button class="list-view" onclick="startQRScanner()">Liste laden</button>
+        </div>
+    </div>
+
+    <script>
+        let freezerList = JSON.parse(localStorage.getItem('freezerList')) || {};
+        let fridgeList = JSON.parse(localStorage.getItem('fridgeList')) || {};
+
+        function saveToLocalStorage() {
+            localStorage.setItem('freezerList', JSON.stringify(freezerList));
+            localStorage.setItem('fridgeList', JSON.stringify(fridgeList));
+        }
+
+        function showItems(type) {
+            const container = document.getElementById('main-container');
+            container.innerHTML = `
+                <h1>${type === 'freezer' ? 'Gefriertruhe' : 'Kühlschrank'} Artikel</h1>
+                <div class="items" id="${type}-items">
+                    ${type === 'freezer' ? `
+                        <button onclick="addItem('Wurzelbrot', 'freezer')">Wurzelbrot</button>
+                        <button onclick="addItem('Fladenbrot', 'freezer')">Fladenbrot</button>
+                        <button onclick="addItem('Brezel', 'freezer')">Brezel</button>
+                        <button onclick="addItem('Knauzenwecken', 'freezer')">Knauzenwecken</button>
+                        <button onclick="addItem('Schokocroissant', 'freezer')">Schokocroissant</button>
+                        <button class="custom-button" onclick="addCustomItem('freezer')">Eigenen Artikel</button>
+                    ` : `
+                        <button onclick="addItem('Schokobanane', 'fridge')">Schokobanane</button>
+                        <button onclick="addItem('Marmelade-Taler', 'fridge')">Marmelade-Taler</button>
+                        <button onclick="addItem('Nougat-Taler', 'fridge')">Nougat-Taler</button>
+                        <button onclick="addItem('Flammendes Herz', 'fridge')">Flammendes Herz</button>
+                        <button onclick="addItem('Nussecke', 'fridge')">Nussecke</button>
+                        <button onclick="addItem('Mandelhörnchen', 'fridge')">Mandelhörnchen</button>
+                        <button class="custom-button" onclick="addCustomItem('fridge')">Eigenen Artikel</button>
+                    `}
+                </div>
+                <div class="controls">
+                    <button class="back-button" onclick="showSelection()">Zurück</button>
+                    <button class="list-view" onclick="toggleList('${type}')">Liste ansehen</button>
+                </div>
+            `;
+        }
+
+        function showSelection() {
+            const container = document.getElementById('main-container');
+            container.innerHTML = `
+                <h1>Wählen Sie aus</h1>
+                <div class="selection">
+                    <button onclick="showItems('freezer')">Gefriertruhe</button>
+                    <button onclick="showItems('fridge')">Kühlschrank</button>
+                </div>
+                <div class="controls">
+                    <button class="list-view" onclick="generateQRCode()">Liste ausgeben</button>
+                    <button class="list-view" onclick="startQRScanner()">Liste laden</button>
+                </div>
+            `;
+        }
+
+        function addItem(item, type) {
+            const list = type === 'freezer' ? freezerList : fridgeList;
+            if (!list[item]) {
+                list[item] = 1;
+            } else {
+                list[item]++;
+            }
+            saveToLocalStorage();
+        }
+
+        function addCustomItem(type) {
+            const itemName = prompt('Geben Sie den Namen des Artikels ein:');
+            if (itemName) {
+                addItem(itemName, type);
+            }
+        }
+
+        function toggleList(type) {
+            const container = document.getElementById('main-container');
+            const list = type === 'freezer' ? freezerList : fridgeList;
+            container.innerHTML = `
+                <h1>${type === 'freezer' ? 'Gefriertruhe' : 'Kühlschrank'} Liste</h1>
+                <ul id="list">
+                    ${Object.keys(list).map(item => `
+                        <li>${item} x${list[item]} 
+                            <button class="back-button" onclick="removeItem('${item}', '${type}')">Entfernen</button>
+                        </li>
+                    `).join('')}
+                </ul>
+                <div class="controls">
+                    <button class="back-button" onclick="showItems('${type}')">Zurück</button>
+                </div>
+            `;
+        }
+
+        function removeItem(item, type) {
+            const list = type === 'freezer' ? freezerList : fridgeList;
+            if (list[item] > 1) {
+                list[item]--;
+            } else {
+                delete list[item];
+            }
+            saveToLocalStorage();
+            toggleList(type);
+        }
+
+        function generateQRCode() {
+            const container = document.getElementById('main-container');
+            container.innerHTML = `
+                <h1>Liste ausgeben</h1>
+                <canvas id="qr-code"></canvas>
+                <div class="controls">
+                    <button class="back-button" onclick="showSelection()">Zurück</button>
+                </div>
+            `;
+            const qr = new QRious({
+                element: document.getElementById('qr-code'),
+                size: 200,
+                value: JSON.stringify({ freezerList, fridgeList })
+            });
+        }
+
+        
+        function startQRScanner() {
+    const container = document.getElementById('main-container');
+    container.innerHTML = `
+        <h1>Liste laden</h1>
+        <div id="qr-reader"></div>
+        <div class="controls">
+            <button class="back-button" onclick="showSelection()">Zurück</button>
+        </div>
+    `;
+
+    try {
+        const html5QrCode = new Html5Qrcode("qr-reader");
+
+        html5QrCode.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: 250
+            },
+            qrCodeMessage => {
+                try {
+                    const data = JSON.parse(qrCodeMessage);
+                    if (data && data.freezerList && data.fridgeList) {
+                        freezerList = data.freezerList;
+                        fridgeList = data.fridgeList;
+                        saveToLocalStorage();
+                        html5QrCode.stop().then(() => {
+                            console.log('QR Code scanner stopped.');
+                        }).catch(err => {
+                            console.error('Failed to stop QR Code scanner:', err);
+                        });
+                        showSelection();
+                    } else {
+                        console.error('Invalid QR Code format.');
+                    }
+                } catch (error) {
+                    console.error('Error parsing QR Code:', error);
+                }
+            }
+        ).catch(err => {
+            console.error('Failed to start QR Code scanner:', err);
+        });
+    } catch (error) {
+        console.error('Error initializing QR Code scanner:', error);
+    }
+}
+    </script>
+</body>
+</html>
