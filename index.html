@@ -16,23 +16,21 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            max-height: 100vh;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            overflow-y: auto;
         }
         .container {
             text-align: center;
             padding: 20px;
-            border: 2px solid #8f8;
+            border: 3px solid #8f8;
             border-radius: 15px;
             width: 90%;
             max-width: 700px;
             background-color: #222;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            overflow: hidden;
+            box-shadow: 0 0 64px rgba(0, 255, 0, 0.5);
+            overflow-y: auto;
             margin: auto;
             width: 100vw;
-            
         }
         h1 {
             font-size: 2em;
@@ -54,6 +52,7 @@
             width: 100%;
             max-width: 200px;
             box-sizing: border-box;
+            overflow: auto;
         }
         button.list-view {
             background-color: #ff6600;
@@ -103,6 +102,7 @@
                 width: 100%;
                 padding: 10px;
                 box-sizing: border-box;
+                overflow-y: auto;
             }
         }
         #qr-code {
@@ -128,7 +128,6 @@
             <button class="list-view" onclick="showListOptions()">Liste</button>
         </div>
     </div>
-
     <script>
         let freezerList = JSON.parse(localStorage.getItem('freezerList')) || {};
         let fridgeList = JSON.parse(localStorage.getItem('fridgeList')) || {};
