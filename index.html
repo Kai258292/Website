@@ -125,7 +125,7 @@
             <button onclick="showItems('fridge')">Kühlschrank</button>
         </div>
         <div class="controls">
-            <button class="list-view" onclick="showListOptions()">Liste</button>
+            <button class="list-view" onclick="showListOptions()">Listen</button>
         </div>
     </div>
     <script>
@@ -140,10 +140,11 @@
         function showListOptions() {
             const container = document.getElementById('main-container');
             container.innerHTML = `
-                <h1>Liste</h1>
+                <h1>Listen</h1>
                 <div class="controls">
-                    <button class="list-view" onclick="generateQRCode()">Liste ausgeben</button>
-                    <button class="list-view" onclick="startQRScanner()">Liste laden</button>
+                    <button class="list-view" onclick="generateQRCode()">Listen ausgeben</button>
+                    <button class="list-view" onclick="startQRScanner()">Listen laden</button>
+                    <button class="list-view" onclick="clearList()">Listen löschen</button>
                 </div>
                  <div class="controls">
                     <button class="back-button" onclick="showSelection()">Zurück</button>
@@ -160,7 +161,7 @@
                     <button onclick="showItems('fridge')">Kühlschrank</button>
                 </div>
                 <div class="controls">
-                    <button class="list-view" onclick="showListOptions()">Liste</button>
+                    <button class="list-view" onclick="showListOptions()">Listen</button>
                 </div>
             `;
         }
@@ -221,7 +222,7 @@
             const container = document.getElementById('main-container');
             const list = type === 'freezer' ? freezerList : fridgeList;
             container.innerHTML = `
-                <h1>${type === 'freezer' ? 'Gefriertruhe' : 'Kühlschrank'} Liste</h1>
+                <h1>${type === 'freezer' ? 'Gefriertruhe' : 'Kühlschrank'} Listen</h1>
                 <ul id="list">
                     ${Object.keys(list).map(item => `
                         <li>${item} x${list[item]} 
@@ -249,7 +250,7 @@
         function generateQRCode() {
             const container = document.getElementById('main-container');
             container.innerHTML = `
-                <h1>Liste ausgeben</h1>
+                <h1>Listen ausgeben</h1>
                 <canvas id="qr-code"></canvas>
                 <div class="controls">
                     <button class="back-button" onclick="showListOptions()">Zurück</button>
@@ -265,7 +266,7 @@
         function startQRScanner() {
             const container = document.getElementById('main-container');
             container.innerHTML = `
-                <h1>Liste laden</h1>
+                <h1>Listen laden</h1>
                 <div id="qr-reader"></div>
                 <div class="controls">
                     <button class="back-button" onclick="showListOptions()">Zurück</button>
@@ -306,6 +307,17 @@
                 });
             } catch (error) {
                 console.error('Error initializing QR Code scanner:', error);
+            }
+        }
+
+        function clearList() {
+            const itemName = prompt('Geben Sie "Bestätigen" ein um die Listen zu löschen:');
+            if (itemName == "Bestätigen") {
+                localStorage.clear();
+                location.reload();
+                alert("Alle listen wurden gelöscht");
+            } else {
+                alert("Fehlgeschlagen");
             }
         }
     </script>
