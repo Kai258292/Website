@@ -294,6 +294,7 @@
                                 }).catch(err => {
                                     console.error('Failed to stop QR Code scanner:', err);
                                 });
+                                alert("Listen wurden übertragen.");
                                 showListOptions();
                             } else {
                                 console.error('Invalid QR Code format.');
@@ -304,6 +305,11 @@
                     }
                 ).catch(err => {
                     console.error('Failed to start QR Code scanner:', err);
+                    if (err == "Error getting userMedia, error = NotAllowedError: Permission denied") {
+                        alert("Erlaube damit die Website zugriff auf die Kamera hat.");
+                    } else {
+                        alert("Error starting QR Code scanner.")
+                    }
                 });
             } catch (error) {
                 console.error('Error initializing QR Code scanner:', error);
@@ -311,8 +317,8 @@
         }
 
         function clearList() {
-            const itemName = prompt('Geben Sie "Bestätigen" ein um die Listen zu löschen:');
-            if (itemName == "Bestätigen") {
+            const confirm = prompt('Geben Sie "Bestätigen" ein um die Listen zu löschen:');
+            if (confirm == "Bestätigen") {
                 localStorage.clear();
                 location.reload();
                 alert("Alle listen wurden gelöscht");
